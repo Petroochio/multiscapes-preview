@@ -84,7 +84,7 @@
         init: function() {
           
           document.addEventListener('wheel', (e) => {
-            this.zoom += e.deltaY / 10;
+            this.zoom += e.deltaY / 50;
             if (this.zoom < 0) this.zoom = 0;
             if (this.zoom > 1) this.zoom = 1;
             this.el.object3D.position.z = 4 + (6 * this.zoom);  
