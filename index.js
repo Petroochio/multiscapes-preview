@@ -16,7 +16,7 @@ console.log('ws go!');
 var net = require('net');
 
 var s = net.createServer();
-s.listen(1337, '192.168.1.203');
+s.listen(1337, '192.168.0.3');
 
 let sockets = [];
 
@@ -36,6 +36,11 @@ s.on('connection', function(sock) {
           } else {
             wss.clients.forEach(c => c.send('CAP_LOW'));
           }
+        }
+
+        if (dataString[0] === 'p') {
+          const pVal = parseInt(dataString.split('-')[1]);
+          console.log(pVal);
         }
         // Write the data back to all the connected, the client will receive it as data from the server
         // sockets.forEach(function(sock, index, array) {
