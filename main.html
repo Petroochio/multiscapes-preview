@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Multiscapes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.7.1/aframe.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow: hidden;
+        background: #000000;
+      }
+
+      .hidden-vid {
+        position: absolute;
+        z-index: 1;
+      }
+
+      #root {
+        width: 100vh;
+        height: 100vh;
+        z-index: 10;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <script>
+
+      // SHADERS
+      const simpleVert = `
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+
+          vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * modelViewPosition;
+        }
+      `;
+
+      const simpleFrag =`
+        // Use medium precision.
+        precision mediump float;
+
+        // This receives the color value from the schema, which becomes a vec3 in the shader.
+        uniform vec3 color;
+
+        // This receives the opacity value from the schema, which becomes a number.
+        uniform float opacity;
+
+        uniform sampler2D src;
+
+        varying vec2 vUv;
+
+        void main() {
+          gl_FragColor = texture2D(src, vUv);
+        }
+      `;
+
+      AFRAME.registerShader('basic', {
+        schema: {
+          src: {type: 'map', is: 'uniform'},
+        },
+        vertexShader: simpleVert,
+        fragmentShader: simpleFrag,
+      });
+      const thirdSectionFloor =`
+        // Use medium precision.
+        precision mediump float;
+
+        // This receives the color value from the schema, which becomes a vec3 in the shader.
+        uniform vec3 color;
+
+        // This receives the opacity value from the schema, which becomes a number.
+        uniform float opacity;
+
+        uniform sampler2D src;
+
+        varying vec2 vUv;
+
+        void main() {
+          if (vUv.x < 0.5) {
+            gl_FragColor = texture2D(src, vUv);
+          } else {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+          }
+        }
+      `;
+
+      AFRAME.registerShader('floor', {
+        schema: {
+          src: {type: 'map', is: 'uniform'},
+        },
+        vertexShader: simpleVert,
+        fragmentShader: thirdSectionFloor,
+      });
+
+      const flowerTint =`
+        // Use medium precision.
+        precision mediump float;
+
+        // This receives the color value from the schema, which becomes a vec3 in the shader.
+        uniform vec3 color;
+
+        // This receives the opacity value from the schema, which becomes a number.
+        uniform float opacity;
+
+        uniform sampler2D src;
+
+        varying vec2 vUv;
+
+        void main() {
+          vec4 sample = texture2D(src, vUv); // Displays Nothing
+          if (vUv.x < 0.8) {
+            sample = texture2D(src, vec2(vUv.x + 0.1, vUv.y));
+          }
+          if (sample.r > 0.6 && sample.g > 0.6 && sample.b < 0.3) {
+            // it's yellow
+            sample.g -= 0.3;
+            
+          }
+
+          if (vUv.x > 0.4 && vUv.x < 0.6) {
+            if (vUv.y > 0.4 && vUv.y < 0.6) {
+              sample += vec4(0.02, 0.02, 0.02, 1.0);
+            }
+          }
+          gl_FragColor = sample;
+          //gl_FragColor = vec4(0.5, 0.2, 1.0, 1.0); // Works; Displays Flat Color
+        }
+      `;
+
+      AFRAME.registerShader('flowerTint', {
+        schema: {
+          src: {type: 'map', is: 'uniform'},
+        },
+        vertexShader: simpleVert,
+        fragmentShader: flowerTint,
+      });
+
+      const canvasMask = `
+        // Use medium precision.
+        precision mediump float;
+
+        // This receives the color value from the schema, which becomes a vec3 in the shader.
+        uniform vec3 color;
+
+        // This receives the opacity value from the schema, which becomes a number.
+        uniform float opacity;
+
+        uniform sampler2D mask;
+        uniform sampler2D src;
+
+        varying vec2 vUv;
+
+        void main() {
+          vec4 maskVal = texture2D(mask, vUv);
+          vec4 sample = texture2D(src, vUv); // Displays Nothing
+          gl_FragColor = vec4(maskVal.r * sample.r, maskVal.g * sample.g, maskVal.b * sampleVal.b, maskVal.a);
+        }
+      `;
+      AFRAME.registerShader('canvas_mask', {
+        schema: {
+          mask: {type: 'map', is: 'uniform'},
+          src: {type: 'map', is: 'uniform'},
+        },
+        vertexShader: simpleVert,
+        fragmentShader: canvasMask,
+      });
+
+      // let isMouseDown = false;
+      let zoom = 1;
+      const ZOOM_DIFF = 5;
+
+      // All components go here
+      AFRAME.registerComponent('stage-x-rotate', {
+        isMouseDown: false,
+        init: function() {
+          document.addEventListener('mousedown', () => this.isMouseDown = true);
+          document.addEventListener('mouseup', () => this.isMouseDown = false);
+          document.addEventListener('mouseleave', () => this.isMouseDown = false);
+          document.addEventListener('mousemove', (e) => {
+            if (this.isMouseDown) {
+              this.el.object3D.rotation.y += e.movementX * zoom * 0.004;
+            }
+          });
+        }
+      });
+
+      AFRAME.registerComponent('stage-y-rotate', {
+        isMouseDown: false,
+        init: function() {
+          document.addEventListener('mousedown', () => this.isMouseDown = true);
+          document.addEventListener('mouseup', () => this.isMouseDown = false);
+          document.addEventListener('mouseleave', () => this.isMouseDown = false);
+          document.addEventListener('mousemove', (e) => {
+            if (this.isMouseDown) {
+              this.el.object3D.rotation.x += e.movementY * zoom * 0.004;
+
+              if (this.el.object3D.rotation.x < -0.1) this.el.object3D.rotation.x = -0.1;
+              if (this.el.object3D.rotation.x > 1.32) this.el.object3D.rotation.x = 1.32;
+            }
+          });
+        }
+      });
+
+      AFRAME.registerComponent('camera-zoom', {
+        zoom: 1,
+        init: function() {
+          
+          document.addEventListener('wheel', (e) => {
+            this.zoom += e.deltaY / 50;
+            if (this.zoom < 0) this.zoom = 0;
+            if (this.zoom > 1) this.zoom = 1;
+            this.el.object3D.position.z = 4 + (6 * this.zoom);  
+          });
+        }
+      });
+    </script>
+
+    <a-scene class="fullscreen" inspector="" keyboard-shortcuts="" screenshot="" vr-mode-ui="">
+      <a-assets>
+        <img id="flower" src="./img/yellow-flower.jpg">
+        <video id="flower-vid" autoplay loop="true" src="./videos/flower.mp4"></video>
+        <video id="coral-vid" autoplay loop="true" src="./videos/coral.mp4"></video>
+        <video id="expl-vid" autoplay loop="true" src="./videos/Expl-1.m4v"></video>
+        <!-- <video id="expl-vid" autoplay loop="true" src="./videos/flower.mp4"></video> -->
+        <!-- <video id="wheat" autoplay loop="true" src="./videos/wheat.mp4"></video> -->
+      </a-assets>
+      <a-entity id="stage" stage-y-rotate>
+        <a-entity id="stage-2" stage-x-rotate>
+          <a-camera camera-zoom position="0 -0.5 10" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
+        </a-entity>
+      </a-entity>
+      <!-- <a-entity id="stage">
+          <a-entity id="stage-2"> -->
+      
+      <a-entity light="color:#aaa; intensity:1.5;" position="-1 5.173 -1"></a-entity>
+      <!-- <a-entity light="color:#AFA; intensity:1.5;" position="-4.336 5.173 8.016"></a-entity> -->
+      <a-cylinder id="round" position="0 0 0" shadow radius="0.5" height="1.5" scale="5 0.01 5" material="shader: floor; src: #waves"></a-cylinder>
+      <!-- <a-entity geometry="primitive: box" material="shader: flowerTint; src: #flower"></a-entity> -->
+      <a-box position="-1.211 0.75 0" shadow material="color:#8b8b8b" scale="2.5 1.5 0.1" geometry=""></a-box>
+      <a-video id="main-wall" position="-1.16 0.766 -0.064" geometry="width:2.6;height:1.5"></a-video>
+      <a-box position="0 -0.2 0" shadow material="color:#000000" scale="6 0.4 6"></a-box>
+      <a-box position="1.227 0.75 0" material="opacity:0.6;color:#fbfbfb;transparent:true" scale="2.5 1.5 0.01"></a-box>
+      <a-box position="-0.53 0.75 1.067" shadow rotation="0 60 0" material="color:#8b8b8b" scale="2.5 1.5 0.1"></a-box>
+      <a-entity id="pillars">
+        <a-box position="-1.64 0.17 -1.224" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="1.021 0.17 -1.654" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="1.777 0.17 -0.986" shadowmaterial="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="1.254 0.17 -0.573" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="0.222 0.17 -1.745" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="0.769 0.17 -1.053" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="-0.055 0.17 -1.166" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="-1.942 0.17 -0.615" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="-0.936 0.17 -0.789" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+        <a-box position="-0.976 0.17 -1.43" shadow material="color:#ececec" scale="0.2 0.5 0.2"></a-box>
+      </a-entity>
+      <a-sphere id="light-demo" shadow color="#000088" position="-1.159 0.582 0.702" geometry="radius:0.2"></a-sphere>
+      <!-- <a-entity light="type: spot; color: #AFA; intensity: 1.5" position="-1 1 0"></a-entity> -->
+      <a-entity id="spotlights">
+        <a-entity light="type: spot;angle:30;color:#5a5afe;intensity:1.5;type:spot;castShadow:true" position="-0.865 0.25 1.787" rotation="16.78766339733312 19.595156593474155 0.6875493541569879"></a-entity>
+      </a-entity>
+      
+      <a-sky material="color:#3f3f3f"></a-sky>
+    </a-scene>
+  </body>
+</html>

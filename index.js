@@ -29,7 +29,7 @@ s.on('connection', function(sock) {
         const dataString = '' + data; // hacky
         // console.log(dataString[0]);
         if (dataString[0] === 'c') {
-          const capVal = parseInt(dataString.split('-')[1]);
+          const capVal = dataString.split('-')[1];
           // console.log(capVal);
           if (capVal > 2500) {
             wss.clients.forEach(c => c.send('CAP_HIGH'));
@@ -39,7 +39,7 @@ s.on('connection', function(sock) {
         }
 
         if (dataString[0] === 'p') {
-          const pVal = parseInt(dataString.split('-')[1]);
+          const pVal = dataString.split('-')[1];
           console.log(pVal);
         }
         // Write the data back to all the connected, the client will receive it as data from the server
@@ -49,3 +49,5 @@ s.on('connection', function(sock) {
     });
 });
 console.log('tcp go!');
+
+// loop

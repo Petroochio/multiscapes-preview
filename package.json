@@ -10,6 +10,35 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "aframe": "^1.0.4",
+    "babel-loader": "^8.0.6",
+    "midi": "^1.0.0",
+    "ramda": "^0.27.0",
+    "three": "^0.113.2",
+    "webpack": "^4.41.6",
     "ws": "^7.2.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "browsers": [
+              "Firefox > 50"
+            ]
+          }
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "webpack-cli": "^3.3.11"
   }
 }
