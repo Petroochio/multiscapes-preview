@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 const http = require('http');
 const WebSocket = require('ws');
@@ -16,7 +17,7 @@ console.log('ws go!');
 var net = require('net');
 
 var s = net.createServer();
-s.listen(1337, '192.168.0.3');
+s.listen(1337, '192.168.43.128');
 
 let sockets = [];
 
@@ -30,12 +31,12 @@ s.on('connection', function(sock) {
         // console.log(dataString[0]);
         if (dataString[0] === 'c') {
           const capVal = dataString.split('-')[1];
-          // console.log(capVal);
-          if (capVal > 2500) {
-            wss.clients.forEach(c => c.send('CAP_HIGH'));
-          } else {
-            wss.clients.forEach(c => c.send('CAP_LOW'));
-          }
+          console.log(capVal);
+          // if (capVal > 2500) {
+          //   wss.clients.forEach(c => c.send('CAP_HIGH'));
+          // } else {
+          //   wss.clients.forEach(c => c.send('CAP_LOW'));
+          // }
         }
 
         if (dataString[0] === 'p') {

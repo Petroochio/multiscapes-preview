@@ -10,7 +10,8 @@
         "arrays": "always-multiline",
         "objects": "always-multiline",
         "functions": "ignore"
-    }]
+    }],
+    "linebreak-style":"off"
   },
   "env": {
     "browser": true
