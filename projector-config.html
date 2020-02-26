@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Multiscapes</title>
+    <script src="./build/app.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow: hidden;
+        background: #000000;
+      }
+
+      .hidden-vid {
+        position: absolute;
+        z-index: 1;
+      }
+
+      #root {
+        width: 100vh;
+        height: 100vh;
+        z-index: 10;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <a-scene class="fullscreen" inspector="" keyboard-shortcuts="" screenshot="" vr-mode-ui="false">
+      <a-assets>
+        <canvas id="layer-0" width=2048 height=1024></canvas>
+        <canvas id="layer-1" width=2048 height=1024></canvas>
+        <video id="coral-vid" autoplay loop="true" src="./videos/coral.mp4"></video>
+      </a-assets>
+      <a-entity id="stage" key-rotate-y key-translate>
+        <a-entity id="stage-2" key-rotate-x>
+          <a-camera key-zoom position="0 0 10" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
+        </a-entity>
+      </a-entity>
+      
+      <a-entity id="canvas-control" canvas-controller></a-entity>
+      <a-entity light="color:#aaa; intensity:1.5;" position="-1 5.173 -1"></a-entity>
+      <a-plane height="12" width="20" position="10 6 -10" rotation="0 0 0" material="shader: flat; color:#aaaaaa"></a-plane>
+      <a-plane height="20" width="40" position="0 -0.2 0" rotation="-90 0 0" material="shader: canvas-mask; mask:#layer-1; src: #coral-vid; transparent: true;"></a-plane>
+      <a-plane height="20" width="40" rotation="-90 0 0" material="shader: basic-texture; src:#layer-0; transparent: True;"></a-plane>
+      <!-- Pedstal Sizes
+        L   W   H (in inches)
+        27 	27	39
+        27	21	39
+        25	25	38
+        25	19	38
+        23	23	37
+        23	17	37
+        21	21	36
+        21	15	36
+        19	19	35
+        19	21	35
+        17	17	34
+        17	25	34
+      -->
+      <a-entity id="pedistals">
+        <a-box position="0 1.625 0" shadow material="shader: flat; color:#999999" scale="2.25 3.25 2.25"></a-box>
+      </a-entity>
+
+      
+      <a-sky material="color:#000000"></a-sky>
+      <!-- <a-sky material="color:#003388"></a-sky> -->
+    </a-scene>
+  </body>
+</html>

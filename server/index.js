@@ -17,7 +17,7 @@ console.log('ws go!');
 var net = require('net');
 
 var s = net.createServer();
-s.listen(1337, '192.168.43.128');
+s.listen(1337, '192.168.0.11');
 
 let sockets = [];
 
@@ -25,13 +25,16 @@ s.on('connection', function(sock) {
     console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
     sockets.push(sock);
 
+    let prevVal = 0;
     sock.on('data', function(data) {
         // console.log('DATA ' + sock.remoteAddress + ': ' + data);
         const dataString = '' + data; // hacky
         // console.log(dataString[0]);
         if (dataString[0] === 'c') {
           const capVal = dataString.split('-')[1];
-          console.log(capVal);
+          // console.log(capVal);
+          if (capVal - prevVal > 400) console.log(capVal - prevVal);
+          prevVal = capVal;
           // if (capVal > 2500) {
           //   wss.clients.forEach(c => c.send('CAP_HIGH'));
           // } else {
@@ -49,6 +52,8 @@ s.on('connection', function(sock) {
         // });
     });
 });
+
+// sock.on('error', )
 console.log('tcp go!');
 
 // loop

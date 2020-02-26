@@ -1,3 +1,3 @@
 import './OrbitControls';
 import './CanvasController';
-console.log('wat');
+import './KeyTransform';
