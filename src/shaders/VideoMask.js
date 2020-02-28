@@ -88,9 +88,15 @@ const canvasMask = `
     vec4 maskVal = texture2D(mask, vUv);
     vec4 sample = texture2D(src, vUv);
     // Ideally this will multiply the canvas mask by other values in the texture
-    gl_FragColor = vec4(maskVal.r * sample.r, maskVal.g * sample.g, maskVal.b * sample.b, maskVal.a);
+    if (maskVal.r < 0.1 && maskVal.g < 0.1 && maskVal.b < 0.1) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    }
+    else {
+      gl_FragColor = vec4(maskVal.r * sample.r, maskVal.g * sample.g, maskVal.b * sample.b, maskVal.a);
+    }
   }
 `;
+
 AFRAME.registerShader('canvas-mask', {
   schema: {
     mask: { type: 'map', is: 'uniform' },

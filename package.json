@@ -17,6 +17,7 @@
     "aframe": "^1.0.4",
     "babel-loader": "^8.0.6",
     "midi": "^1.0.0",
+    "midi-show-control": "^2.0.0",
     "ramda": "^0.27.0",
     "three": "^0.113.2",
     "webpack": "^4.41.6",

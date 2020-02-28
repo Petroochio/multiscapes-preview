@@ -26,7 +26,12 @@ export const simpleFrag = `
   varying vec2 vUv;
 
   void main() {
-    gl_FragColor = texture2D(src, vUv);
+    vec4 sample = texture2D(src, vUv);
+    if (sample.r > 0.9 && sample.g > 0.9 && sample.b > 0.9) {
+    gl_FragColor = vec4(0.0,0.0,0.0,0.0);
+    } else {
+      gl_FragColor = sample;
+    }
   }
 `;
 
