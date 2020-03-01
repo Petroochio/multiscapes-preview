@@ -27,11 +27,11 @@ export const simpleFrag = `
 
   void main() {
     vec4 sample = texture2D(src, vUv);
-    if (sample.r > 0.9 && sample.g > 0.9 && sample.b > 0.9) {
-    gl_FragColor = vec4(0.0,0.0,0.0,0.0);
-    } else {
+    // if (sample.r > 0.9 && sample.g > 0.9 && sample.b > 0.9) {
+    // gl_FragColor = vec4(0.0,0.0,0.0,0.0);
+    // } else {
       gl_FragColor = sample;
-    }
+    // }
   }
 `;
 

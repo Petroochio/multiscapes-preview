@@ -1,4 +1,7 @@
 import AFRAME from 'aframe';
+import { sendMessage } from '../MessageManager';
+
+const config = {};
 
 // All components go here
 AFRAME.registerComponent('key-rotate-x', {
@@ -9,11 +12,16 @@ AFRAME.registerComponent('key-rotate-x', {
       switch (e.key) {
         case 'ArrowRight':
           this.el.object3D.rotation.y -= moveVal;
-          console.log('cam rot y: ' + this.el.object3D.rotation.y);
+          config.yaxis = this.el.object3D.rotation.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
+          // console.log('cam rot y: ' + this.el.object3D.rotation.y);
           break;
         case 'ArrowLeft':
           this.el.object3D.rotation.y += moveVal;
-          console.log('cam rot y: ' + this.el.object3D.rotation.y);
+          config.yaxis = this.el.object3D.rotation.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         default: break;
       }
@@ -29,11 +37,15 @@ AFRAME.registerComponent('key-rotate-y', {
       switch (e.key) {
         case 'ArrowUp':
           this.el.object3D.rotation.x -= moveVal;
-          console.log('cam rot x: ' + this.el.object3D.rotation.x);
+          config.xaxis = this.el.object3D.rotation.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'ArrowDown':
           this.el.object3D.rotation.x += moveVal;
-          console.log('cam rot x: ' + this.el.object3D.rotation.x);
+          config.xaxis = this.el.object3D.rotation.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         default: break;
       }
@@ -47,19 +59,27 @@ AFRAME.registerComponent('key-zoom', {
       switch (e.key) {
         case '=':
           this.el.object3D.position.z -= 1;
-          console.log('cam zoom: ' + this.el.object3D.position.z);
+          config.zoom = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case '+':
           this.el.object3D.position.z -= 0.1;
-          console.log('cam zoom: ' + this.el.object3D.position.z);
+          config.zoom = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case '_':
           this.el.object3D.position.z += 0.1;
-          console.log('cam zoom: ' + this.el.object3D.position.z);
+          config.zoom = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case '-':
           this.el.object3D.position.z += 1;
-          console.log('cam zoom: ' + this.el.object3D.position.z);
+          config.zoom = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         default: break;
       }
@@ -73,51 +93,75 @@ AFRAME.registerComponent('key-translate', {
       switch (e.key) {
         case 'w':
           this.el.object3D.position.z -= 1;
-          console.log('base pos z: ' + this.el.object3D.position.z);
+          config.zpos = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'W':
           this.el.object3D.position.z -= 0.03;
-          console.log('base pos z: ' + this.el.object3D.position.z);
+          config.zpos = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'S':
           this.el.object3D.position.z += 0.03;
-          console.log('base pos z: ' + this.el.object3D.position.z);
+          config.zpos = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 's':
           this.el.object3D.position.z += 1;
-          console.log('base pos z: ' + this.el.object3D.position.z);
+          config.zpos = this.el.object3D.position.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'a':
           this.el.object3D.position.x -= 1;
-          console.log('base pos x: ' + this.el.object3D.position.x);
+          config.xpos = this.el.object3D.position.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'A':
           this.el.object3D.position.x -= 0.03;
-          console.log('base pos x: ' + this.el.object3D.position.x);
+          config.xpos = this.el.object3D.position.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'D':
           this.el.object3D.position.x += 0.03;
-          console.log('base pos x: ' + this.el.object3D.position.x);
+          config.xpos = this.el.object3D.position.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'd':
           this.el.object3D.position.x += 1;
-          console.log('base pos x: ' + this.el.object3D.position.x);
+          config.xpos = this.el.object3D.position.x;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'e':
           this.el.object3D.position.y -= 1;
-          console.log('base pos y: ' + this.el.object3D.position.y);
+          config.ypos = this.el.object3D.position.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'E':
           this.el.object3D.position.y -= 0.03;
-          console.log('base pos y: ' + this.el.object3D.position.y);
+          config.ypos = this.el.object3D.position.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'q':
           this.el.object3D.position.y += 1;
-          console.log('base pos y: ' + this.el.object3D.position.y);
+          config.ypos = this.el.object3D.position.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         case 'Q':
           this.el.object3D.position.y += 0.03;
-          console.log('base pos y: ' + this.el.object3D.position.y);
+          config.ypos = this.el.object3D.position.y;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', config);
           break;
         default: break;
       }

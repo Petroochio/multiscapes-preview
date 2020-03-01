@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Multiscapes</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow: hidden;
+        background: #000000;
+      }
+
+      .mat {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #ccc;
+        min-width: 50px;
+        min-height: 50px;
+      }
+
+      #mats {
+        width: 100vw;
+        height: 100vw;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="mats">
+      <div id="mat-0" class="mat">1</div>
+      <div id="mat-1" class="mat">2</div>
+      <div id="mat-2" class="mat">3</div>
+
+      <div id="mat-3" class="mat">4</div>
+      <div id="mat-4" class="mat">5</div>
+      <div id="mat-5" class="mat">6</div>
+
+      <div id="mat-6" class="mat">7</div>
+      <div id="mat-7" class="mat">8</div>
+      <div id="mat-8" class="mat">9</div>
+
+      <div id="mat-9" class="mat">10</div>
+      <div id="mat-10" class="mat">11</div>
+      <div id="mat-11" class="mat">12</div>
+
+      <div id="mat-12" class="mat">13</div>
+      <div id="mat-13" class="mat">14</div>
+      <div id="mat-14" class="mat">15</div>
+      <div id="mat-15" class="mat">16</div>
+    </div>
+
+    <script>
+      let socket;
+      socket = new WebSocket('ws://localhost:5000');
+
+      // Connection opened
+      socket.addEventListener('open', (event) => {
+        // socket.send('Hello Server!');
+      });
+
+      socket.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        console.log(message);
+        if (message.type === 'MAT_STATE') {
+          message.data.forEach(m => {
+            console.log(m, `#mat-${m.id}`);
+            const mat = document.querySelector(`#mat-${m.id}`);
+
+            mat.style.left = `${(m.x * window.innerWidth)}px`;
+            mat.style.top = `${(m.y * window.innerHeight)}px`;
+          });
+        }
+      });
+
+      const sendMat = (id, x, y) => {
+        const type = 'MAT_PLACEMENT';
+        const data = { id: id, x: x, y: y };
+        socket.send(JSON.stringify({ type: type, data: data }));
+      };
+
+      let currentMat = null;
+      const mats = document.querySelectorAll('.mat');
+      for (let i = 0; i < mats.length; i++) {
+        mats[i].addEventListener('mousedown', (e) => {
+          currentMat = e.target;
+        });
+      }
+
+      document.body.addEventListener('mousemove', (e) => {
+        // console.log(e);
+        if (currentMat) {
+          currentMat.style.top = `${e.clientY - 25}px`;
+          currentMat.style.left = `${e.clientX - 25}px`;
+        }
+      });
+
+      document.addEventListener('keypress', (e) => {
+        switch (e.key) {
+          case ' ':
+            sendMat(
+              parseInt(currentMat.id.split('-')[1]),
+              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+            );
+            currentMat = null;
+            break;
+          case 'w':
+            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) - 1}px`;
+            break;
+          case 'a':
+            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) - 1}px`;
+            break; 
+          case 's':
+            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) + 1}px`;
+            break;
+          case 'd':
+            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + 1}px`;
+            break;
+        }
+      });
+    </script>
+  </body>
+</html>
