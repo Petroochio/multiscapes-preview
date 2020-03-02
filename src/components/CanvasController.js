@@ -8,16 +8,21 @@ class MatCircle {
     this.y = y;
     this.stepCount = steps; // use this to grow radius, have multiple r for each level
     this.layer0ValTarget = this.stepCount / 100;
-    this.layer0Val = 0;
-    this.layer1ValTarget = 0;
+    this.layer0Val = 0.00000001;
+    this.layer1ValTarget = 0.00000001;
     this.layer1Val = 0;
   }
 
   update(dt) {
-    this.layer0ValTarget = this.stepCount / 100;
+    this.layer0ValTarget = this.stepCount / 200;
     // console.log(this.layer0ValTarget);
-    // this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * 2;
-    this.layer0Val = 0.2; //this.layer0ValTarget;
+    this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * 2;
+    // this.layer0Val = this.layer0ValTarget;
+
+    this.layer1ValTarget = this.stepCount / 500;
+    // console.log(this.layer0ValTarget);
+    this.layer1Val += (this.layer1ValTarget - this.layer1Val) * dt * 2;
+    // this.layer0Val = this.layer0ValTarget;
   }
 }
 
@@ -58,7 +63,7 @@ AFRAME.registerComponent('canvas-controller', {
       const v0 = this.layer0.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
       v0.x = m.x;
       v0.y = m.y;
-      console.log(m.x, m.y, m.layer0Val);
+      // console.log(m.x, m.y, m.layer0Val);
       v0.z = m.layer0Val;
 
       const v1 = this.layer1.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
