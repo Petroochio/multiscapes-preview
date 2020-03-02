@@ -7,169 +7,64 @@ class MatCircle {
     this.x = x;
     this.y = y;
     this.stepCount = steps; // use this to grow radius, have multiple r for each level
+    this.layer0ValTarget = this.stepCount / 100;
+    this.layer0Val = 0;
+    this.layer1ValTarget = 0;
+    this.layer1Val = 0;
+  }
+
+  update(dt) {
+    this.layer0ValTarget = this.stepCount / 100;
+    // console.log(this.layer0ValTarget);
+    // this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * 2;
+    this.layer0Val = 0.2; //this.layer0ValTarget;
   }
 }
 
 // All components go here
 AFRAME.registerComponent('canvas-controller', {
-  layer0: { canvas: null, ctx: null },
-  layer1: { canvas: null, ctx: null },
+  layer0: null,
+  layer1: null,
   layer2: { canvas: null, ctx: null },
   // mats: [new MatCircle(0, 0.5, 0.5, 0)],
-  mats: [new MatCircle(0,0.5,0.5,0)],//, new MatCircle(1,0.5,0.25,0)],
+  mats: [],
   init() {
-    this.layer0.canvas = document.querySelector('#layer-0');
-    this.layer0.ctx = this.layer0.canvas.getContext('2d');
-    this.layer1.canvas = document.querySelector('#layer-1');
-    this.layer1.ctx = this.layer1.canvas.getContext('2d');
-    // this.layer2.canvas = document.querySelector('#layer-2');
-    // this.layer2.ctx = this.layer1.canvas.getContext('2d');
+    this.layer0 = document.querySelector('#layer-0');
+    this.layer1 = document.querySelector('#layer-1');
+    this.prevTime = Date.now();
 
     addMessageListener('MAT_STATE', (matData) => {
-      // if (this.mats.length < 1) {
-      //   this.mats = matData.map((m) => new MatCircle(m.id, m.x, m.y, m.stepCount));
-      //   console.log(this.mats);
-      // } else {
-      console.log('else');
-      console.log(this.mats);
-      matData.forEach((m) => {
-        this.mats[m.id].x = m.x;
-        this.mats[m.id].y = m.y;
-        // add steps
-      });
-      // }
+      if (this.mats.length < 1) {
+        this.mats = matData.map((m) => new MatCircle(m.id, m.x, m.y, m.stepCount));
+      } else {
+        matData.forEach((m) => {
+          this.mats[m.id].x = m.x;
+          this.mats[m.id].y = m.y;
+          // add steps
+          this.mats[m.id].stepCount = m.stepCount;
+        });
+      }
     });
   },
 
-  x: 0,
-  drawLayer0() {
-    const ctx = this.layer0.ctx;
-    const width = this.layer0.canvas.width;
-    const height = this.layer0.canvas.height;
-
-    // ctx.globalCompositeOperation = 'source-over';
-    ctx.clearRect(0, 0, width, height);
-    ctx.save();
-    // ctx.globalCompositeOperation = 'xor';
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(width / 2, 0, height, 0, Math.PI, false);
-    ctx.closePath();
-    ctx.fill();
-
-    // ctx.fillStyle = '#ffffff';
-    // ctx.beginPath();
-    // ctx.arc(500, 500, 100, 0, Math.PI * 2);
-    // ctx.closePath();
-    // ctx.fill();
-
-
-    // const holePath = new Path2D();
-    // const holePath1 = new Path2D();
-    // const holePath2 = new Path2D();
-    // const holePath3 = new Path2D();
-    // const holePath4 = new Path2D();
-
-    // holePath1.arc(width / 2, height / 3, height / 5, 0, Math.PI * 2);
-    // // holePath.arc(width / 2, height / 3, height / 5, 0, Math.PI * 2, true);
-    // holePath2.arc(width * 0.7, height * 0.8, height / 10, 0, Math.PI * 2, true);
-    // holePath3.arc(width / 5, height / 3 * 2, height / 7, 0, Math.PI * 2, true);
-    // holePath4.arc(width / 5 * 3, height / 4, height / 15, 0, Math.PI * 2, true);
-
-    // ctx.save();
-    // ctx.clip(holePath1);
-    // ctx.clearRect(0, 0, width, height);
-    // ctx.restore();
-
-    // ctx.save();
-    // ctx.clip(holePath2);
-    // ctx.clearRect(0, 0, width, height);
-    // ctx.restore();
-
-    // ctx.save();
-    // ctx.clip(holePath3);
-    // ctx.clearRect(0, 0, width, height);
-    // ctx.restore();
-
-    // ctx.save();
-    // ctx.clip(holePath4);
-    // ctx.clearRect(0, 0, width, height);
-    // ctx.restore();
-    this.x += 1;
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(this.x, height * 0.5, 100, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.fill();
-    // // console.log(this.mats);
-    // this.mats.forEach((m) => {
-    //   m.x += 0.00001;
-    //   // const holePath = new Path2D();
-    //   // console.log(width * m.x);
-    //   // ctx.save();
-    //   ctx.fillStyle = '#ffffff';
-    //   ctx.beginPath();
-    //   ctx.arc(width * m.x, height * m.y, 100, 0, Math.PI * 2);
-    //   ctx.closePath();
-    //   ctx.fill();
-
-    //   // ctx.clip(holePath);
-    //   // ctx.restore();
-    // });
-
-    ctx.restore();
-  },
-
-  drawLayer1() {
-    const ctx = this.layer1.ctx;
-    const width = this.layer1.canvas.width;
-    const height = this.layer1.canvas.height;
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(width / 2, 0, height, 0, Math.PI, false);
-    ctx.closePath();
-    ctx.fill();
-
-    // ctx.fillStyle = '#000000';
-    // ctx.beginPath();
-    // ctx.arc(width / 2, height / 3, height / 10, 0, Math.PI * 2, true);
-    // ctx.closePath();
-    // ctx.fill();
-    // ctx.clip();
-    // ctx.clearRect(0, 0, width, height);
-
-    // ctx.beginPath();
-    // ctx.arc(width / 5, height / 3 * 2, height / 13, 0, Math.PI * 2, true);
-    // ctx.closePath();
-    // ctx.fill();
-    // ctx.clip();
-    // ctx.clearRect(0, 0, width, height);
-  },
-
-  drawLayer2() {
-    const ctx = this.layer2.ctx;
-    const width = this.layer2.canvas.width;
-    const height = this.layer2.canvas.height;
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(width / 2, 0, height, 0, Math.PI, false);
-    ctx.closePath();
-    ctx.fill();
-
-    // ctx.beginPath();
-    // ctx.arc(width / 2, height / 3, height / 10, 0, Math.PI * 2, true);
-    // ctx.clip();
-    // ctx.clearRect(0, 0, width, height);
-  },
-
   tick() {
-    // layer 0 stuff
-    this.drawLayer0();
-    this.drawLayer1();
-    // this.drawLayer2();
+    const currentTime = Date.now();
+    const dt = (currentTime - this.prevTime) / 1000;
+    this.prevTime = currentTime;
+
+    // update and apply mat vals
+    this.mats.forEach((m) => {
+      m.update(dt);
+      const v0 = this.layer0.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
+      v0.x = m.x;
+      v0.y = m.y;
+      console.log(m.x, m.y, m.layer0Val);
+      v0.z = m.layer0Val;
+
+      const v1 = this.layer1.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
+      v1.x = m.x;
+      v1.y = m.y;
+      v0.z = m.layer1Val;
+    });
   },
 });

@@ -80,6 +80,10 @@
         }
       });
 
+      const stepMat = (id) => {
+        socket.send(JSON.stringify({ type: 'MAT_STEP', data: id }));
+      };
+
       const sendMat = (id, x, y) => {
         const type = 'MAT_PLACEMENT';
         const data = { id: id, x: x, y: y };
@@ -103,6 +107,7 @@
       });
 
       document.addEventListener('keypress', (e) => {
+        // console.log(e.key);
         switch (e.key) {
           case ' ':
             sendMat(
@@ -123,6 +128,10 @@
             break;
           case 'd':
             currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + 1}px`;
+            break;
+          case 't':
+            console.log('step')
+            stepMat(15);
             break;
         }
       });

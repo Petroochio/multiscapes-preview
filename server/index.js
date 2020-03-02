@@ -54,6 +54,10 @@ wss.on('connection', function connection(ws) {
         // send update
         wss.broadcast(JSON.stringify({ type: 'MAT_STATE', data: mats }));
         break;
+      case 'MAT_STEP':
+        mats[m.data].addStep();
+        // console.log('mat step')
+        wss.broadcast(JSON.stringify({ type: 'MAT_STATE', data: mats }));
       default: break;
     }
   });
