@@ -11,11 +11,38 @@ function genMessage(cueNum) {
   });
 }
 
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8000 });
+// add broadcast func
+wss.broadcast = function broadcast(msg) {
+  console.log(msg);
+  wss.clients.forEach(function each(client) {
+      client.send(msg);
+   });
+};
+
+let threshold = 400;
+let threshold2 = 400;
+wss.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    const m = JSON.parse(message);
+    switch (m.type) {
+      case 'SET_THRESHOLD_1':
+        threshold = m.data;
+        break;
+      case 'SET_THRESHOLD_2':
+        threshold = m.data;
+        break;
+      default: break;
+    }
+  });
+});
+
 // Set up a new output.
 const output = new midi.Output();
 
 // // Open the first available output port.
-output.openPort(1);
+// output.openPort(1);
 
 // // Send a MIDI message.
 // output.sendMessage();
@@ -34,6 +61,9 @@ var s = net.createServer((sock) => {
 let sockets = [];
 
 let cue = 1;
+const numCues = 20;
+const DEBOUNCE = 2000;
+let lastTime = Date.now();
 s.on('connection', function(sock) {
     console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
     sockets.push(sock);
@@ -44,16 +74,19 @@ s.on('connection', function(sock) {
         const dataString = '' + data; // hacky
         // console.log(dataString[0]);
         if (dataString[0] === 'c') {
+          if (dataString.length < 2) return;
+
           const capVal = dataString.split('-')[1];
           // console.log(capVal);
-          if (capVal - prevVal > 400) {
+          // console.log(capVal);
+          let currentTime = Date.now();
+          if (capVal - prevVal > threshold && lastTime + DEBOUNCE < currentTime) {
             // console.log(capVal - prevVal);
-            output.openPort(1);
-            output.sendMessage(genMessage(cue));
-            output.closePort();
-            console.log(cue);
-            cue += 1;
-            if (cue > 3) cue = 1;
+            // output.openPort(1);
+            // output.sendMessage(genMessage(cue));
+            // output.closePort();
+            console.log('Do cue ', Math.round(numCues * Math.random() + 1), 'Threshold: ', threshold);
+            lastTime = currentTime;
           }
           prevVal = capVal;
           // if (capVal > 2500) {

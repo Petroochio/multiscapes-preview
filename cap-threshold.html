@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Multiscapes</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow: hidden;
+        background: #dddddd;
+      }
+
+      .mat {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #ccc;
+        min-width: 50px;
+        min-height: 50px;
+      }
+
+      #mats {
+        width: 100vw;
+        height: 100vw;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="mats">
+      <div>Threshold 1 <input id="threshold-1" type="range" name="threshold-1" min="200" max="1000"><span id="threshold-1-val"></span></div>
+      <div>Threshold 2 <input id="threshold-2" type="range" name="threshold-2" min="200" max="1000"><span id="threshold-2-val"></span></div>
+    </div>
+
+    <script>
+      let socket;
+      socket = new WebSocket('ws://localhost:8000');
+
+      // Connection opened
+      socket.addEventListener('open', (event) => {
+        // socket.send('Hello Server!');
+      });
+
+      document.querySelector('#threshold-1').addEventListener('change', (e) => {
+        const type = 'SET_THRESHOLD_1';
+        const data = e.target.value;
+        document.querySelector('#threshold-1-val').innerHTML = e.target.value;
+        socket.send(JSON.stringify({ type: type, data: data }));
+      });
+      document.querySelector('#threshold-1').addEventListener('mousemove', (e) => {
+        document.querySelector('#threshold-1-val').innerHTML = e.target.value;
+      });
+
+      document.querySelector('#threshold-2').addEventListener('change', (e) => {
+        // console.log(e);
+        const type = 'SET_THRESHOLD_2';
+        const data = e.target.value;
+        document.querySelector('#threshold-2-val').innerHTML = e.target.value;
+        socket.send(JSON.stringify({ type: type, data: data }));
+      });
+      document.querySelector('#threshold-2').addEventListener('mousemove', (e) => {
+        document.querySelector('#threshold-2-val').innerHTML = e.target.value;
+      });
+    </script>
+  </body>
+</html>
