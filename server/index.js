@@ -44,7 +44,19 @@ wss.on('connection', function connection(ws) {
     const m = JSON.parse(message);
     switch (m.type) {
       case 'PROJECTOR_CONFIG':
-        console.log(m.data);
+        fs.writeFile(`projector${m.data.id}.txt`, JSON.stringify(m.data.config), function (err) {
+          if (err) return console.log(err);
+          console.log('projector config ' + m.data.id);
+        });
+        break;
+      case 'LOAD_PROJECTOR':
+        fs.readFile(`projector${m.data.id}.txt`, (err, conf) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          ws.send(JSON.stringify({ type: 'PROJECTOR_CONFIG_LOAD', data: JSON.parse(conf) }));
+        });
         break;
       case 'MAT_PLACEMENT':
         console.log(m.data.x, m.data.y);

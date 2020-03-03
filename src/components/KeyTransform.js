@@ -1,8 +1,8 @@
 import AFRAME from 'aframe';
-import { sendMessage } from '../MessageManager';
+import { sendMessage, addMessageListener } from '../MessageManager';
 
-const config = {};
-
+const config = { fov: 80 };
+let id = 1;
 // All components go here
 AFRAME.registerComponent('key-rotate-x', {
   isMouseDown: false,
@@ -14,16 +14,23 @@ AFRAME.registerComponent('key-rotate-x', {
           this.el.object3D.rotation.y -= moveVal;
           config.yaxis = this.el.object3D.rotation.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           // console.log('cam rot y: ' + this.el.object3D.rotation.y);
           break;
         case 'ArrowLeft':
           this.el.object3D.rotation.y += moveVal;
           config.yaxis = this.el.object3D.rotation.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         default: break;
+      }
+    });
+
+    addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      if (c.yaxis) {
+        config.yaxis = c.yaxis;
+        this.el.object3D.rotation.y = config.yaxis;
       }
     });
   },
@@ -39,15 +46,22 @@ AFRAME.registerComponent('key-rotate-y', {
           this.el.object3D.rotation.x -= moveVal;
           config.xaxis = this.el.object3D.rotation.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'ArrowDown':
           this.el.object3D.rotation.x += moveVal;
           config.xaxis = this.el.object3D.rotation.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         default: break;
+      }
+    });
+
+    addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      if (c.xaxis) {
+        config.xaxis = c.xaxis;
+        this.el.object3D.rotation.x = config.xaxis;
       }
     });
   },
@@ -61,109 +75,154 @@ AFRAME.registerComponent('key-zoom', {
           this.el.object3D.position.z -= 1;
           config.zoom = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case '+':
           this.el.object3D.position.z -= 0.1;
           config.zoom = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case '_':
           this.el.object3D.position.z += 0.1;
           config.zoom = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case '-':
           this.el.object3D.position.z += 1;
           config.zoom = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        case '[':
+          config.fov -= 1;
+          this.el.setAttribute('fov', config.fov);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        case ']':
+          config.fov += 1;
+          this.el.setAttribute('fov', config.fov);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         default: break;
+      }
+    });
+
+    addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      if (c.zoom) {
+        config.zoom = c.zoom;
+        this.el.object3D.position.z = config.zoom;
+      }
+
+      if (c.fov) {
+        config.fov = c.fov;
+        this.el.setAttribute('fov', config.fov);
       }
     });
   },
 });
 
 AFRAME.registerComponent('key-translate', {
+  schema: {
+    pid: {type: 'int', default: 1}
+  },
   init() {
+    console.log(this.data.pid);
+    id = this.data.pid;
+    sendMessage('LOAD_PROJECTOR', { id });
     document.addEventListener('keydown', (e) => {
       switch (e.key) {
         case 'w':
           this.el.object3D.position.z -= 1;
           config.zpos = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'W':
           this.el.object3D.position.z -= 0.03;
           config.zpos = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'S':
           this.el.object3D.position.z += 0.03;
           config.zpos = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 's':
           this.el.object3D.position.z += 1;
           config.zpos = this.el.object3D.position.z;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'a':
           this.el.object3D.position.x -= 1;
           config.xpos = this.el.object3D.position.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'A':
           this.el.object3D.position.x -= 0.03;
           config.xpos = this.el.object3D.position.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'D':
           this.el.object3D.position.x += 0.03;
           config.xpos = this.el.object3D.position.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'd':
           this.el.object3D.position.x += 1;
           config.xpos = this.el.object3D.position.x;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'e':
           this.el.object3D.position.y -= 1;
           config.ypos = this.el.object3D.position.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'E':
           this.el.object3D.position.y -= 0.03;
           config.ypos = this.el.object3D.position.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'q':
           this.el.object3D.position.y += 1;
           config.ypos = this.el.object3D.position.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         case 'Q':
           this.el.object3D.position.y += 0.03;
           config.ypos = this.el.object3D.position.y;
           // console.log(config);
-          sendMessage('PROJECTOR_CONFIG', config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
           break;
         default: break;
+      }
+    });
+
+    addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      if (c.ypos) {
+        config.ypos = c.ypos;
+        this.el.object3D.position.y = config.ypos;
+      }
+
+      if (c.xpos) {
+        config.xpos = c.xpos;
+        this.el.object3D.position.x = config.xpos;
+      }
+
+      if (c.zpos) {
+        config.zpos = c.zpos;
+        this.el.object3D.position.z = config.zpos;
       }
     });
   },
