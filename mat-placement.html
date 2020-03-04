@@ -55,11 +55,22 @@
       <div id="mat-13" class="mat">14</div>
       <div id="mat-14" class="mat">15</div>
       <div id="mat-15" class="mat">16</div>
+
+      <button id="begin-section">Begin Section</button>
+      <button id="stop-section">Stop Section</button>
     </div>
 
     <script>
       let socket;
       socket = new WebSocket('ws://localhost:5000');
+
+      document.querySelector('#begin-section').addEventListener('click', () => {
+        socket.send(JSON.stringify({ type: 'BEGIN_SECTION', data: '' }));
+      });
+
+      document.querySelector('#stop-section').addEventListener('click', () => {
+        socket.send(JSON.stringify({ type: 'STOP_SECTION', data: '' }));
+      });
 
       // Connection opened
       socket.addEventListener('open', (event) => {

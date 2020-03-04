@@ -37,6 +37,10 @@ wss.broadcast = function broadcast(msg) {
    });
 };
 
+let startTime = null;
+const MAX_SECTION_TIME = 60000; // make this bigger
+let isInEnd = false;
+
 wss.on('connection', function connection(ws) {
   ws.send(JSON.stringify({ type: 'MAT_STATE', data: mats }));
 
@@ -44,10 +48,17 @@ wss.on('connection', function connection(ws) {
     const m = JSON.parse(message);
     switch (m.type) {
       case 'PROJECTOR_CONFIG':
-        fs.writeFile(`projector${m.data.id}.txt`, JSON.stringify(m.data.config), function (err) {
-          if (err) return console.log(err);
-          console.log('projector config ' + m.data.id);
-        });
+        // fs.writeFile(`projector${m.data.id}.txt`, JSON.stringify(m.data.config), function (err) {
+        //   if (err) return console.log(err);
+        //   console.log('projector config ' + m.data.id);
+        // });
+        break;
+      case 'BEGIN_SECTION':
+        startTime = Date.now();
+        wss.broadcast(JSON.stringify({ type: 'START_PROJECTIONS', data: '' }));
+        break;
+      case 'STOP_SECTION':
+        wss.broadcast(JSON.stringify({ type: 'END_PROJECTIONS', data: '' }));
         break;
       case 'LOAD_PROJECTOR':
         fs.readFile(`projector${m.data.id}.txt`, (err, conf) => {
@@ -100,6 +111,10 @@ s.on('connection', function(sock) {
         console.log('step ' + id);
         mats[id].addStep();
         wss.broadcast(JSON.stringify({ type: 'MAT_STATE', data: mats }));
+      }
+
+      if (startTime !== null && startTime + MAX_SECTION_TIME < Date.now()) {
+        wss.broadcast(JSON.stringify({ type: 'TRIGGER_END', data: ' ' }))
       }
     }
     // Write the data back to all the connected, the client will receive it as data from the server

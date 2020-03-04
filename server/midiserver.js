@@ -21,8 +21,9 @@ wss.broadcast = function broadcast(msg) {
    });
 };
 
-let threshold = 400;
-let threshold2 = 400;
+let threshold = 650;
+let threshold2 = 650;
+
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const m = JSON.parse(message);
@@ -61,12 +62,14 @@ var s = net.createServer((sock) => {
 let sockets = [];
 
 let cue = 1;
-const numCues = 20;
-const DEBOUNCE = 2000;
+const cueStart = 11;
+const numCues = 9;
+const DEBOUNCE = 20000;
 let lastTime = Date.now();
 s.on('connection', function(sock) {
     console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
     sockets.push(sock);
+    sock.on('error', (e) => { console.log(e) });
 
     let prevVal = 0;
     sock.on('data', function(data) {
@@ -82,10 +85,10 @@ s.on('connection', function(sock) {
           let currentTime = Date.now();
           if (capVal - prevVal > threshold && lastTime + DEBOUNCE < currentTime) {
             // console.log(capVal - prevVal);
-            // output.openPort(1);
-            // output.sendMessage(genMessage(cue));
-            // output.closePort();
-            console.log('Do cue ', Math.round(numCues * Math.random() + 1), 'Threshold: ', threshold);
+            output.openPort(1);
+            output.sendMessage(genMessage(Math.round(numCues * Math.random() + cueStart)));
+            output.closePort();
+            console.log('Do cue ', Math.round(numCues * Math.random() + cueStart), 'Threshold: ', threshold, capVal - prevVal);
             lastTime = currentTime;
           }
           prevVal = capVal;
