@@ -119,15 +119,35 @@
             break;
           case 'w':
             currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) - 1}px`;
+            sendMat(
+              parseInt(currentMat.id.split('-')[1]),
+              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+            );
             break;
           case 'a':
             currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) - 1}px`;
+            sendMat(
+              parseInt(currentMat.id.split('-')[1]),
+              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+            );
             break; 
           case 's':
             currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) + 1}px`;
+            sendMat(
+              parseInt(currentMat.id.split('-')[1]),
+              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+            );
             break;
           case 'd':
             currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + 1}px`;
+            sendMat(
+              parseInt(currentMat.id.split('-')[1]),
+              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+            );
             break;
           case 't':
             console.log('step')

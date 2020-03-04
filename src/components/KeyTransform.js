@@ -67,6 +67,49 @@ AFRAME.registerComponent('key-rotate-y', {
   },
 });
 
+AFRAME.registerComponent('key-rotate-z', {
+  isMouseDown: false,
+  init() {
+    document.addEventListener('keydown', (e) => {
+      const moveVal = e.shiftKey ? 0.001 : 0.01;
+      switch (e.key) {
+        case ',':
+          this.el.object3D.rotation.z -= moveVal;
+          config.zaxis = this.el.object3D.rotation.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        case '.':
+          this.el.object3D.rotation.z += moveVal;
+          config.zaxis = this.el.object3D.rotation.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        case '<':
+          this.el.object3D.rotation.z -= moveVal;
+          config.zaxis = this.el.object3D.rotation.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        case '>':
+          this.el.object3D.rotation.z += moveVal;
+          config.zaxis = this.el.object3D.rotation.z;
+          // console.log(config);
+          sendMessage('PROJECTOR_CONFIG', { id, config });
+          break;
+        default: break;
+      }
+    });
+
+    addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      if (c.zaxis) {
+        config.zaxis = c.zaxis;
+        this.el.object3D.rotation.z = config.zaxis;
+      }
+    });
+  },
+});
+
 AFRAME.registerComponent('key-zoom', {
   init() {
     document.addEventListener('keydown', (e) => {

@@ -163,7 +163,7 @@ const matHoles = `
     } else if (r6 < mat_6.z || r7 < mat_7.z || r8 < mat_8.z) {
       color = vec4(0.0, 0.0, 0.0, 0.0);
     } else if (r9 < mat_9.z || r10 < mat_10.z || r11 < mat_11.z) {
-      color = vec4(0.0, 0.0, 0.0, 0.0);
+      color = vec4(1.0, 0.0, 0.0, 0.0);
     } else if (r12 < mat_12.z || r13 < mat_13.z || r14 < mat_14.z || r15 < mat_15.z) {
       color = vec4(0.0, 0.0, 0.0, 0.0);
     }

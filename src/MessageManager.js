@@ -1,11 +1,15 @@
 let socket;
 const listeners = [];
+const sendQueue = [];
 export const init = () => {
   socket = new WebSocket('ws://localhost:5000');
 
   // Connection opened
   socket.addEventListener('open', (event) => {
     // socket.send('Hello Server!');
+    sendQueue.forEach((m) => {
+      socket.send(m);
+    });
   });
 
   // Listen for messages
@@ -21,7 +25,8 @@ export const init = () => {
 };
 
 export const sendMessage = (type, data) => {
-  socket.send(JSON.stringify({ type, data }));
+  if (socket) socket.send(JSON.stringify({ type, data }));
+  else sendQueue.push(JSON.stringify({ type, data }));
 };
 
 export const addMessageListener = (msgType, listener) => {
