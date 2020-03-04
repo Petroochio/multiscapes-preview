@@ -58,6 +58,7 @@
 
       <button id="begin-section">Begin Section</button>
       <button id="stop-section">Stop Section</button>
+      <button id="do-refresh">Do Refresh</button>
     </div>
 
     <script>
@@ -70,6 +71,10 @@
 
       document.querySelector('#stop-section').addEventListener('click', () => {
         socket.send(JSON.stringify({ type: 'STOP_SECTION', data: '' }));
+      });
+
+      document.querySelector('#do-refresh').addEventListener('click', () => {
+        socket.send(JSON.stringify({ type: 'DO_REFRESH', data: '' }));
       });
 
       // Connection opened
@@ -102,6 +107,8 @@
       };
 
       let currentMat = null;
+      let mouseDown = true;
+      let speed = 5;
       const mats = document.querySelectorAll('.mat');
       for (let i = 0; i < mats.length; i++) {
         mats[i].addEventListener('mousedown', (e) => {
@@ -111,10 +118,20 @@
 
       document.body.addEventListener('mousemove', (e) => {
         // console.log(e);
-        if (currentMat) {
+        if (currentMat && mouseDown) {
           currentMat.style.top = `${e.clientY - 25}px`;
           currentMat.style.left = `${e.clientX - 25}px`;
         }
+      });
+      document.body.addEventListener('mouseup', (e) => {
+        // console.log(e);
+        mouseDown = false;
+        if (!currentMat) return;
+        sendMat(
+          parseInt(currentMat.id.split('-')[1]),
+          parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
+          parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
+        );
       });
 
       document.addEventListener('keypress', (e) => {
@@ -129,7 +146,7 @@
             currentMat = null;
             break;
           case 'w':
-            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) - 1}px`;
+            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) - speed}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
               parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
@@ -137,7 +154,7 @@
             );
             break;
           case 'a':
-            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) - 1}px`;
+            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) - speed}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
               parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
@@ -145,7 +162,7 @@
             );
             break; 
           case 's':
-            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) + 1}px`;
+            currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) + speed}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
               parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
@@ -153,16 +170,15 @@
             );
             break;
           case 'd':
-            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + 1}px`;
+            currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + speed}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
               parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
               parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight
             );
             break;
-          case 't':
-            console.log('step')
-            stepMat(15);
+          case 'r':
+            speed = speed > 2 ? 1 : 5;
             break;
         }
       });

@@ -18,11 +18,15 @@ class MatCircle {
   }
 
   maxTargets() {
+    console.log('glug');
     this.isMaxed = true;
     this.layer0ValTarget = 1.0;
     this.layer1ValTarget = 1.0;
     this.layer2ValTarget = 1.0;
     this.layer3ValTarget = 1.0;
+
+    document.querySelector('#wall-panel-1').setAttribute('position', '0 200 0');
+    document.querySelector('#wall-panel-2').setAttribute('position', '0 200 0');
   }
 
   update(dt) {
@@ -32,18 +36,18 @@ class MatCircle {
     // this.layer0Val = this.layer0ValTarget;
     // this.layer0Val = 0.02;
 
-    if (this.stepCount > 100) {
-      if (!this.isMaxed) this.layer1ValTarget = 0.02 + this.stepCount / 400;
+    if (this.stepCount > 30 || this.isMaxed) {
+      if (!this.isMaxed) this.layer1ValTarget = 0.02 + this.stepCount / 350;
       this.layer1Val += (this.layer1ValTarget - this.layer1Val) * dt * 0.9;
     }
 
-    if (this.stepCount > 200) {
-      if (!this.isMaxed) this.layer2ValTarget = 0.02 + this.stepCount / 550;
+    if (this.stepCount > 60 || this.isMaxed) {
+      if (!this.isMaxed) this.layer2ValTarget = 0.02 + this.stepCount / 450;
       this.layer2Val += (this.layer2ValTarget - this.layer2Val) * dt * 0.9;
     }
 
-    if (this.stepCount > 300) {
-      if (!this.isMaxed) this.layer3ValTarget = 0.02 + this.stepCount / 650;
+    if (this.stepCount > 120 || this.isMaxed) {
+      if (!this.isMaxed) this.layer3ValTarget = 0.02 + this.stepCount / 550;
       this.layer3Val += (this.layer3ValTarget - this.layer3Val) * dt * 0.9;
     }
     // this.layer1ValTarget = this.stepCount / 500;
@@ -109,14 +113,28 @@ AFRAME.registerComponent('canvas-controller', {
     const currentTime = Date.now();
     const dt = (currentTime - this.prevTime) / 1000;
     this.prevTime = currentTime;
+    // console.log(dt);
 
-    const totalSteps = this.mats.reduce((total, m) => total + m.stepCount);
+    if (this.mats.length < 1) return;
+
+    // const totalSteps = this.mats.reduce((total, m) => {
+    //   // console.log(total)
+    //   return total + m.stepCount;
+    // }, 0);
+    // console.log(totalSteps);
+    let totalSteps = 0;
+    for (let i = 0; i < this.mats.length; i++) {
+      totalSteps += this.mats[i].stepCount;
+    }
+    // console.log(totalSteps);
     if (!this.panel1Active && totalSteps > 200) {
       this.panel1Active = true;
-      document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; src: #wall-vid-1');
-    } else if (!this.panel2Active && totalSteps > 350) {
+      document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; color: white; src: #wall-vid-1;');
+    }
+    if (!this.panel2Active && totalSteps > 200) {
       this.panel2Active = true;
-      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-2');
+      // console.log('wat');
+      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-2; color: white;');
     }
 
     // update and apply mat vals
@@ -149,14 +167,14 @@ AFRAME.registerComponent('canvas-controller', {
       wv2.y = m.y;
       wv2.z = m.layer2Val;
 
-      const v3 = this.layer3.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
-      const wv3 = this.wallLayer3.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
-      v3.x = m.x;
-      v3.y = m.y;
-      v3.z = m.layer3Val;
-      wv3.x = m.x;
-      wv3.y = m.y;
-      wv3.z = m.layer3Val;
+      // const v3 = this.layer3.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
+      // const wv3 = this.wallLayer3.object3DMap.mesh.material.uniforms[`mat_${m.id}`].value;
+      // v3.x = m.x;
+      // v3.y = m.y;
+      // v3.z = m.layer3Val;
+      // wv3.x = m.x;
+      // wv3.y = m.y;
+      // wv3.z = m.layer3Val;
     });
   },
 });

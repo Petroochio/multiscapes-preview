@@ -55,6 +55,7 @@ wss.on('connection', function connection(ws) {
         break;
       case 'BEGIN_SECTION':
         startTime = Date.now();
+        isInEnd = false;
         wss.broadcast(JSON.stringify({ type: 'START_PROJECTIONS', data: '' }));
         break;
       case 'STOP_SECTION':
@@ -81,6 +82,12 @@ wss.on('connection', function connection(ws) {
         mats[m.data].addStep();
         // console.log('mat step')
         wss.broadcast(JSON.stringify({ type: 'MAT_STATE', data: mats }));
+        break;
+      case 'DO_REFRESH':
+        // mats[m.data].addStep();
+        // console.log('mat step')
+        wss.broadcast(JSON.stringify({ type: 'REFRESH', data: ' ' }));
+        break;
       default: break;
     }
   });
@@ -113,7 +120,8 @@ s.on('connection', function(sock) {
         wss.broadcast(JSON.stringify({ type: 'MAT_STATE', data: mats }));
       }
 
-      if (startTime !== null && startTime + MAX_SECTION_TIME < Date.now()) {
+      if (startTime !== null && !isInEnd && startTime + MAX_SECTION_TIME < Date.now()) {
+        isInEnd = true;
         wss.broadcast(JSON.stringify({ type: 'TRIGGER_END', data: ' ' }))
       }
     }

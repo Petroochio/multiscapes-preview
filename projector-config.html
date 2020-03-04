@@ -37,12 +37,12 @@
   <body>
     <a-scene class="fullscreen" inspector="" keyboard-shortcuts="" screenshot="" vr-mode-ui="false">
       <a-assets>
-        <video id="layer-1-vid" autoplay loop="true" src="./videos/color/Expl-12.m4v"></video>
-        <video id="layer-2-vid" autoplay loop="true" src="./videos/color/Neg Blob-20.m4v"></video>
-        <video id="layer-3-vid" autoplay loop="true" src="./videos/BnW/Coral Explosion-10.m4v"></video>
-        <video id="layer-4-vid" autoplay loop="true" src="./videos/BnW/Coral Beginning-9.m4v"></video>
-        <video id="wall-vid-1" autoplay loop="true" src="./videos/color/Neg Building-18.m4v"></video>
-        <video id="wall-vid-2" autoplay loop="true" src="./videos/color/Neg Building-18.m4v"></video>
+        <!-- <video id="layer-1-vid" loop="true" src="./videos/compressed/Expl-12 Trim-1.m4v"></video> -->
+        <video id="layer-2-vid" loop="true" src="./videos/compressed/Neg Blob-20-1.m4v"></video>
+        <video id="layer-3-vid"  loop="true" src="./videos/compressed/Coral Explo .25-1.m4v"></video>
+        <video id="layer-4-vid"  loop="true" src="./videos/compressed/Coral Beginning-9-1.m4v"></video>
+        <video id="wall-vid-1"  loop="true" src="./videos/compressed/Full Panning City-14-1.m4v"></video>
+        <video id="wall-vid-2"  loop="true" src="./videos/compressed/Nyc Reflect-17-1.m4v"></video>
         <!-- <video id="wall-vid" autoplay loop="true" src="./videos/color/Neg Building-18.m4v"></video> -->
         <!-- <image id="grid" src="./videos/grid.png"></image> -->
       </a-assets>
@@ -59,19 +59,19 @@
       <a-entity light="color:#aaa; intensity:1.5;" position="-1 5.173 -1"></a-entity>
 
       <!-- <a-plane id="wall-layer-0" height="19.3" width="19.3" position="0 9.65 -15.91" rotation="0 0 0" material="shader: flat; color:#aaaaaa"></a-plane> -->
-      <a-plane id="wall-layer-4" height="19.3" width="19.3" position="0 9.65 -16.71" rotation="0 0 0" material="shader: flat; src: #layer-4-vid; "></a-plane>
-      <a-plane id="wall-layer-3" height="19.3" width="19.3" position="0 9.65 -16.51" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-3-vid; transparent: true;"></a-plane>
-      <a-plane id="wall-layer-2" height="19.3" width="19.3" position="0 9.65 -16.31" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-2-vid; transparent: true;"></a-plane>
-      <a-plane id="wall-layer-1" height="19.3" width="19.3" position="0 9.65 -16.11" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-1-vid; transparent: true;"></a-plane>
+      <!-- <a-plane id="wall-layer-4" height="19.3" width="19.3" position="0 9.65 -16.71" rotation="0 0 0" material="shader: flat; src: #layer-4-vid; "></a-plane> -->
+      <a-plane id="wall-layer-3" height="19.3" width="19.3" position="0 9.65 -16.51" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-4-vid; transparent: true;"></a-plane>
+      <a-plane id="wall-layer-2" height="19.3" width="19.3" position="0 9.65 -16.31" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-3-vid; transparent: true;"></a-plane>
+      <a-plane id="wall-layer-1" height="19.3" width="19.3" position="0 9.65 -16.11" rotation="0 0 0" material="shader: vid-mat-holes; src: #layer-2-vid; transparent: true;"></a-plane>
       <a-plane id="wall-layer-0" height="19.3" width="19.3" position="0 9.65 -15.91" rotation="0 0 0" material="shader: mat-holes; transparent: true;"></a-plane>
 
       <a-plane id="wall-panel-1" height="10" width="5.63" position="8 14.65 -15.61" rotation="0 0 0" material="shader: flat; color: black;"></a-plane>
       <a-plane id="wall-panel-2" height="10" width="5.63" position="-6 2.65 -15.61" rotation="0 0 0" material="shader: flat; color: black;"></a-plane>
 
-      <a-plane id="layer-4" height="31.83" width="31.83" position="0 -0.8 0" rotation="-90 0 0" material="shader: flat; src: #layer-4-vid; transparent: true;"></a-plane>
-      <a-plane id="layer-3" height="31.83" width="31.83" position="0 -0.6 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-3-vid; transparent: true;"></a-plane>
-      <a-plane id="layer-2" height="31.83" width="31.83" position="0 -0.4 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-2-vid; transparent: true;"></a-plane>
-      <a-plane id="layer-1" height="31.83" width="31.83" position="0 -0.2 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-1-vid; transparent: true;"></a-plane>
+      <!-- <a-plane id="layer-4" height="31.83" width="31.83" position="0 -0.8 0" rotation="-90 0 0" material="shader: flat; src: #layer-4-vid; transparent: true;"></a-plane> -->
+      <a-plane id="layer-3" height="31.83" width="31.83" position="0 -0.6 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-4-vid; transparent: true;"></a-plane>
+      <a-plane id="layer-2" height="31.83" width="31.83" position="0 -0.4 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-3-vid; transparent: true;"></a-plane>
+      <a-plane id="layer-1" height="31.83" width="31.83" position="0 -0.2 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-2-vid; transparent: true;"></a-plane>
       <a-plane id="layer-0" height="31.83" width="31.83" rotation="-90 0 0" material="shader: mat-holes; transparent: true;"></a-plane>
       <!-- <a-plane id="layer-0-temp" height="31.83" width="31.83" rotation="-90 0 0" material="shader: flat; src: #grid;"></a-plane> -->
       <!-- 15.91 9.65-->

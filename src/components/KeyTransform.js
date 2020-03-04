@@ -163,6 +163,10 @@ AFRAME.registerComponent('key-zoom', {
         this.el.setAttribute('fov', config.fov);
       }
     });
+
+    addMessageListener('REFRESH', (c) => {
+      location.reload();
+    });
   },
 });
 
@@ -253,6 +257,14 @@ AFRAME.registerComponent('key-translate', {
     });
 
     addMessageListener('PROJECTOR_CONFIG_LOAD', (c) => {
+      //play vids
+      document.querySelector('#layer-2-vid').play();
+      document.querySelector('#layer-3-vid').play();
+      document.querySelector('#layer-4-vid').play();
+
+      document.querySelector('#wall-vid-1').play();
+      document.querySelector('#wall-vid-2').play();
+
       if (c.ypos) {
         config.ypos = c.ypos;
         this.el.object3D.position.y = config.ypos;
