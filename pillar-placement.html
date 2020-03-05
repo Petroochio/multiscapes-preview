@@ -22,8 +22,6 @@
         top: 0;
         left: 0;
         background-color: #ccc;
-        min-width: 50px;
-        min-height: 50px;
       }
 
       #mats {
@@ -35,29 +33,21 @@
 
   <body>
     <div id="mats">
-      <div id="mat-0" data-rot="0" class="mat">0</div>
-      <div id="mat-1" data-rot="0" class="mat">1</div>
-      <div id="mat-2" data-rot="0" class="mat">2</div>
-      <div id="mat-3" data-rot="0" class="mat">3</div>
-      <div id="mat-4" data-rot="0" class="mat">4</div>
-      <div id="mat-5" data-rot="0" class="mat">5</div>
-      <div id="mat-6" data-rot="0" class="mat">6</div>
-      <div id="mat-7" data-rot="0" class="mat">7</div>
-      <div id="mat-8" data-rot="0" class="mat">8</div>
-      <div id="mat-9" data-rot="0" class="mat">9</div>
+      <div id="mat-0" width="50px" height="50px" data-rot="0" class="mat">0</div>
+      <div id="mat-1" width="50px" height="50px" data-rot="0" class="mat">1</div>
+      <div id="mat-2" width="50px" height="50px" data-rot="0" class="mat">2</div>
+      <div id="mat-3" width="50px" height="50px" data-rot="0" class="mat">3</div>
+      <div id="mat-4" width="50px" height="50px" data-rot="0" class="mat">4</div>
+      <div id="mat-5" width="50px" height="50px" data-rot="0" class="mat">5</div>
+      <div id="mat-6" width="50px" height="50px" data-rot="0" class="mat">6</div>
+      <div id="mat-7" width="50px" height="50px" data-rot="0" class="mat">7</div>
+      <div id="mat-8" width="50px" height="50px" data-rot="0" class="mat">8</div>
+      <div id="mat-9" width="50px" height="50px" data-rot="0" class="mat">9</div>
     </div>
 
     <script>
       let socket;
       socket = new WebSocket('ws://localhost:5000');
-
-      document.querySelector('#begin-section').addEventListener('click', () => {
-        socket.send(JSON.stringify({ type: 'BEGIN_SECTION', data: '' }));
-      });
-
-      document.querySelector('#stop-section').addEventListener('click', () => {
-        socket.send(JSON.stringify({ type: 'STOP_SECTION', data: '' }));
-      });
 
       // Connection opened
       socket.addEventListener('open', (event) => {
@@ -67,24 +57,23 @@
       socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
         console.log(message);
-        if (message.type === 'MAT_STATE') {
+        if (message.type === 'PILLAR_STATE') {
           message.data.forEach(m => {
             console.log(m, `#mat-${m.id}`);
             const mat = document.querySelector(`#mat-${m.id}`);
 
-            mat.style.left = `${(m.x * window.innerWidth)}px`;
-            mat.style.top = `${(m.y * window.innerHeight)}px`;
+            mat.style.left = `${(m.x ? m.x : 1)}px`;
+            mat.style.top = `${(m.y ? m.y : 1)}px`;
+            mat.style.width = m.w ? m.w + 'px': 50 + 'px';
+            mat.style.height = m.h ? m.h + 'px' : 50 + 'px';
+            mat.setAttribute('rot', m.rot ? m.rot : 1);
           });
         }
       });
 
-      const stepMat = (id) => {
-        socket.send(JSON.stringify({ type: 'MAT_STEP', data: id }));
-      };
-
       const sendMat = (id, x, y, w, h, r) => {
-        const type = 'PILLAR_PLACEMENT';
-        const data = { id: id, x: x, y: y, w: w, h: h, r: r };
+        const type = 'SET_PILLAR';
+        const data = { id: id, x: x, y: y, w: w, h: h, rot: r };
         socket.send(JSON.stringify({ type: type, data: data }));
       };
 
@@ -105,138 +94,127 @@
         // console.log(e);
 
         if (currentMat && mouseDown) {
-          currentMat.style.top = `${e.clientY - 25}px`;
-          currentMat.style.left = `${e.clientX - 25}px`;
+          currentMat.style.top = `${e.clientY}px`;
+          currentMat.style.left = `${e.clientX}px`;
         }
       });
 
       document.addEventListener('keypress', (e) => {
         // console.log(e.key);
         switch (e.key) {
-          case ' ':
-            sendPillar(
-              parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
-            );
-            currentMat = null;
-            break;
           case 'w':
             currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) - 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])),
+              parseInt((currentMat.style.height.split('p')[0])),
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'a':
             currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) - 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break; 
           case 's':
             currentMat.style.top = `${parseInt(currentMat.style.top.split('p')[0]) + 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'd':
             currentMat.style.left = `${parseInt(currentMat.style.left.split('p')[0]) + 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
-            break;
-          case 't':
-            // console.log('step')
-            // stepMat(15);
             break;
           case 'i':
             currentMat.style.height = `${parseInt(currentMat.style.height.split('p')[0]) + 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'k':
             currentMat.style.height = `${parseInt(currentMat.style.height.split('p')[0]) - 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'j':
             currentMat.style.width = `${parseInt(currentMat.style.width.split('p')[0]) - 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'l':
             currentMat.style.width = `${parseInt(currentMat.style.width.split('p')[0]) + 1}px`;
             sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'q':
-            currentMat.dataset.rot = parseFloat(currentMat.dataset.rot)+ 0.1;
-            sendPillar(
+            currentMat.setAttribute('rot', parseFloat(currentMat.getAttribute('rot'))+ 1);
+            sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
             break;
           case 'e':
-            currentMat.dataset.rot = parseFloat(currentMat.dataset.rot) - 0.1;
-            sendPillar(
+          currentMat.setAttribute('rot', parseFloat(currentMat.getAttribute('rot'))- 1);
+            sendMat(
               parseInt(currentMat.id.split('-')[1]),
-              parseInt((currentMat.style.left.split('p')[0])) / window.innerWidth,
-              parseInt((currentMat.style.top.split('p')[0])) / window.innerHeight,
-              parseInt((currentMat.style.width.split('p')[0])) / 100,
-              parseInt((currentMat.style.height.split('p')[0])) / 100,
-              parseFloat(currentMat.dataset.rot)
+              parseInt((currentMat.style.left.split('p')[0])),
+              parseInt((currentMat.style.top.split('p')[0])),
+              parseInt((currentMat.style.width.split('p')[0])) ,
+              parseInt((currentMat.style.height.split('p')[0])) ,
+              parseFloat(currentMat.getAttribute('rot'))
             );
+            break;
+          case ' ':
+            const type = 'SAVE_PILLARS';
+            socket.send(JSON.stringify({ type: type, data: 'data' }));
             break;
         }
       });

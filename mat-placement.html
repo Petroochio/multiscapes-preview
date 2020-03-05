@@ -57,7 +57,7 @@
       <div id="mat-15" class="mat">16</div>
 
       <button id="begin-section">Begin Section</button>
-      <button id="stop-section">Stop Section</button>
+      <button id="stop-section">Trigger End</button>
       <button id="do-refresh">Do Refresh</button>
     </div>
 
@@ -70,7 +70,7 @@
       });
 
       document.querySelector('#stop-section').addEventListener('click', () => {
-        socket.send(JSON.stringify({ type: 'STOP_SECTION', data: '' }));
+        socket.send(JSON.stringify({ type: 'DO_END_TRIGGER', data: '' }));
       });
 
       document.querySelector('#do-refresh').addEventListener('click', () => {

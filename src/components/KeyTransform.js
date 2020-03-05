@@ -163,10 +163,6 @@ AFRAME.registerComponent('key-zoom', {
         this.el.setAttribute('fov', config.fov);
       }
     });
-
-    addMessageListener('REFRESH', (c) => {
-      location.reload();
-    });
   },
 });
 

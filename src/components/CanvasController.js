@@ -15,6 +15,26 @@ class MatCircle {
     this.layer2Val = 0;
     this.layer3ValTarget = 0.00000001;
     this.layer3Val = 0;
+    this.hasBegun = false;
+  }
+
+  reset() {
+    this.layer0ValTarget = 0.02;
+    this.layer0Val = 0.00000001;
+    this.layer1ValTarget = 0.00000001;
+    this.layer1Val = 0;
+    this.layer2ValTarget = 0.00000001;
+    this.layer2Val = 0;
+    this.layer3ValTarget = 0.00000001;
+    this.layer3Val = 0;
+    this.hasBegun = false;
+    this.isMaxed = false;
+    this.MAX_SIZE = 0.2;
+    this.sizeMult = 0.0035;
+  }
+
+  begin() {
+    this.hasBegun = true;
   }
 
   maxTargets() {
@@ -30,24 +50,51 @@ class MatCircle {
   }
 
   update(dt) {
-    if (!this.isMaxed) this.layer0ValTarget = 0.02 + this.stepCount / 200;
+    if (!this.hasBegun) {
+      this.layer0Val = 0.0;
+      this.layer1Val = 0.0;
+      this.layer2Val = 0.0;
+      this.layer3Val = 0.0;
+      return;
+    }
+    if (!this.isMaxed) {
+      this.layer0ValTarget = 0.02 + this.stepCount * this.sizeMult;
+      if (this.layer0ValTarget > this.MAX_SIZE) {
+        this.layer0ValTarget = this.MAX_SIZE;
+      }
+    }
     // console.log(this.layer0ValTarget);
     this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * 0.9;
     // this.layer0Val = this.layer0ValTarget;
     // this.layer0Val = 0.02;
 
-    if (this.stepCount > 30 || this.isMaxed) {
-      if (!this.isMaxed) this.layer1ValTarget = 0.02 + this.stepCount / 350;
+    if (this.stepCount > 50 || this.isMaxed) {
+      if (!this.isMaxed) {
+        this.layer1ValTarget = 0.02 + (this.stepCount - 50) * this.sizeMult;
+        if (this.layer1ValTarget > this.MAX_SIZE) {
+          this.layer1ValTarget = this.MAX_SIZE;
+        }
+      }
       this.layer1Val += (this.layer1ValTarget - this.layer1Val) * dt * 0.9;
     }
 
-    if (this.stepCount > 60 || this.isMaxed) {
-      if (!this.isMaxed) this.layer2ValTarget = 0.02 + this.stepCount / 450;
+    if (this.stepCount > 100 || this.isMaxed) {
+      if (!this.isMaxed) {
+        this.layer2ValTarget = 0.02 + (this.stepCount - 100) * this.sizeMult;
+        if (this.layer2ValTarget > this.MAX_SIZE) {
+          this.layer2ValTarget = this.MAX_SIZE;
+        }
+      }
       this.layer2Val += (this.layer2ValTarget - this.layer2Val) * dt * 0.9;
     }
 
-    if (this.stepCount > 120 || this.isMaxed) {
-      if (!this.isMaxed) this.layer3ValTarget = 0.02 + this.stepCount / 550;
+    if (this.stepCount > 150 || this.isMaxed) {
+      if (!this.isMaxed) {
+        this.layer3ValTarget = 0.02 + (this.stepCount - 150) * this.sizeMult;
+        if (this.layer3ValTarget > this.MAX_SIZE) {
+          this.layer3ValTarget = this.MAX_SIZE;
+        }
+      }
       this.layer3Val += (this.layer3ValTarget - this.layer3Val) * dt * 0.9;
     }
     // this.layer1ValTarget = this.stepCount / 500;
@@ -92,20 +139,36 @@ AFRAME.registerComponent('canvas-controller', {
       this.mats.forEach((m) => m.maxTargets());
     });
 
-    addMessageListener('STOP_PROJECTIONS', () => {
-      this.layer0.setAttribute('material', 'shader: flat; color: black;');
-      this.wallLayer0.setAttribute('material', 'shader: flat; color: black;');
+    addMessageListener('BEGIN', () => {
+      this.mats.forEach(m => m.begin());
+    });
 
-      this.layer1.setAttribute('material', 'shader: flat; color: black;');
-      this.wallLayer1.setAttribute('material', 'shader: flat; color: black;');
+    addMessageListener('REFRESH', () => {
+      this.mats.forEach((m) => m.reset());
+      document.querySelector('#layer-2-vid').currentTime = 0;
+      document.querySelector('#layer-3-vid').currentTime = 0;
+      document.querySelector('#layer-4-vid').currentTime = 0;
+
+      document.querySelector('#wall-vid-1').currentTime = 0;
+      document.querySelector('#wall-vid-2').currentTime = 60;
+      document.querySelector('#wall-panel-1').setAttribute('position', '6 8 -14.31');
+      document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -15.11');
+      document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
+      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
+      this.panel1Active = false;
+      // this.layer0.setAttribute('material', 'shader: flat; color: black;');
+      // this.wallLayer0.setAttribute('material', 'shader: flat; color: black;');
+
+      // this.layer1.setAttribute('material', 'shader: flat; color: black;');
+      // this.wallLayer1.setAttribute('material', 'shader: flat; color: black;');
 
 
-      this.layer2.setAttribute('material', 'shader: flat; color: black;');
-      this.wallLayer2.setAttribute('material', 'shader: flat; color: black;');
+      // this.layer2.setAttribute('material', 'shader: flat; color: black;');
+      // this.wallLayer2.setAttribute('material', 'shader: flat; color: black;');
 
 
-      this.layer3.setAttribute('material', 'shader: flat; color: black;');
-      this.wallLayer3.setAttribute('material', 'shader: flat; color: black;');
+      // this.layer3.setAttribute('material', 'shader: flat; color: black;');
+      // this.wallLayer3.setAttribute('material', 'shader: flat; color: black;');
     });
   },
 
@@ -126,15 +189,19 @@ AFRAME.registerComponent('canvas-controller', {
     for (let i = 0; i < this.mats.length; i++) {
       totalSteps += this.mats[i].stepCount;
     }
-    // console.log(totalSteps);
-    if (!this.panel1Active && totalSteps > 200) {
+    console.log(totalSteps);
+    if (!this.panel1Active && totalSteps > 100) {
       this.panel1Active = true;
+      console.log('glug');
       document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; color: white; src: #wall-vid-1;');
+      document.querySelector('#wall-panel-1').setAttribute('position', '4 7 -14.31');
+      
     }
-    if (!this.panel2Active && totalSteps > 200) {
+    if (!this.panel2Active && totalSteps > 20) {
       this.panel2Active = true;
       // console.log('wat');
-      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-2; color: white;');
+      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: white;');
+      document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -14.11');
     }
 
     // update and apply mat vals
