@@ -204,7 +204,7 @@ s.on('connection', function(sock) {
 s.on('error', (e) => {
   console.log(e);
 });
-s.listen(1337, '192.168.0.17');
+// s.listen(1337, '192.168.0.17');
 console.log('tcp go!');
 
 // loop

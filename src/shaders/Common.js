@@ -47,3 +47,24 @@ export default {
   simpleVert,
   simpleFrag,
 };
+
+AFRAME.registerShader('pillar-fade', {
+  schema: {
+    u_time: { type: 'time', is: 'uniform' },
+    offset: { type: 'float', is: 'uniform', default: 0.0 },
+  },
+  vertexShader: simpleVert,
+  fragmentShader: `
+    #ifdef GL_ES
+    precision mediump float;
+    #endif
+
+    uniform float u_time;
+    uniform float offset;
+    float t = (u_time + offset) / 1000.0;
+
+    void main() {
+      gl_FragColor = vec4(abs(sin(t)),abs(sin(t)),abs(sin(t)),1.0);
+    }
+  `,
+});

@@ -16,6 +16,7 @@ class MatCircle {
     this.layer3ValTarget = 0.00000001;
     this.layer3Val = 0;
     this.hasBegun = false;
+    this.speed = 0.8;
   }
 
   reset() {
@@ -29,8 +30,10 @@ class MatCircle {
     this.layer3Val = 0;
     this.hasBegun = false;
     this.isMaxed = false;
-    this.MAX_SIZE = 0.2;
+    this.MAX_SIZE = 0.17;
     this.sizeMult = 0.0035;
+    this.speed = 0.8;
+    this.triggerClose = false;
   }
 
   begin() {
@@ -38,15 +41,27 @@ class MatCircle {
   }
 
   maxTargets() {
-    console.log('glug');
+    this.triggerClose = true;
+    this.closeTime = 3;
+    this.layer0ValTarget = 0.0;
+    this.layer1ValTarget = 0.0;
+    this.layer2ValTarget = 0.0;
+    this.layer3ValTarget = 0.0;
+    this.speed = 1;
+
+    document.querySelector('#wall-panel-1').setAttribute('position', '0 200 0');
+    document.querySelector('#wall-panel-2').setAttribute('position', '0 200 0');
+  }
+
+  triggerMax() {
     this.isMaxed = true;
+    this.triggerClose = false;
+    this.speed = 0.6;
+    this.maxedTime = 45;
     this.layer0ValTarget = 1.0;
     this.layer1ValTarget = 1.0;
     this.layer2ValTarget = 1.0;
     this.layer3ValTarget = 1.0;
-
-    document.querySelector('#wall-panel-1').setAttribute('position', '0 200 0');
-    document.querySelector('#wall-panel-2').setAttribute('position', '0 200 0');
   }
 
   update(dt) {
@@ -57,45 +72,53 @@ class MatCircle {
       this.layer3Val = 0.0;
       return;
     }
-    if (!this.isMaxed) {
+    if (this.triggerClose) {
+      this.closeTime -= dt;
+      if (this.closeTime <= 0) this.triggerMax();
+    }
+    if (this.isMaxed) {
+      this.maxedTime -= dt;
+      if (this.maxedTime <= 0) this.reset();
+    }
+    if (!this.isMaxed && !this.triggerClose) {
       this.layer0ValTarget = 0.02 + this.stepCount * this.sizeMult;
       if (this.layer0ValTarget > this.MAX_SIZE) {
         this.layer0ValTarget = this.MAX_SIZE;
       }
     }
     // console.log(this.layer0ValTarget);
-    this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * 0.9;
+    this.layer0Val += (this.layer0ValTarget - this.layer0Val) * dt * this.speed;
     // this.layer0Val = this.layer0ValTarget;
     // this.layer0Val = 0.02;
 
-    if (this.stepCount > 50 || this.isMaxed) {
-      if (!this.isMaxed) {
-        this.layer1ValTarget = 0.02 + (this.stepCount - 50) * this.sizeMult;
+    if (this.stepCount > 45 || this.isMaxed || this.triggerClose) {
+      if (!this.isMaxed && !this.triggerClose) {
+        this.layer1ValTarget = 0.02 + (this.stepCount - 45) * this.sizeMult;
         if (this.layer1ValTarget > this.MAX_SIZE) {
           this.layer1ValTarget = this.MAX_SIZE;
         }
       }
-      this.layer1Val += (this.layer1ValTarget - this.layer1Val) * dt * 0.9;
+      this.layer1Val += (this.layer1ValTarget - this.layer1Val) * dt * this.speed;
     }
 
-    if (this.stepCount > 100 || this.isMaxed) {
-      if (!this.isMaxed) {
-        this.layer2ValTarget = 0.02 + (this.stepCount - 100) * this.sizeMult;
+    if (this.stepCount > 90 || this.isMaxed || this.triggerClose) {
+      if (!this.isMaxed && !this.triggerClose) {
+        this.layer2ValTarget = 0.02 + (this.stepCount - 90) * this.sizeMult;
         if (this.layer2ValTarget > this.MAX_SIZE) {
           this.layer2ValTarget = this.MAX_SIZE;
         }
       }
-      this.layer2Val += (this.layer2ValTarget - this.layer2Val) * dt * 0.9;
+      this.layer2Val += (this.layer2ValTarget - this.layer2Val) * dt * this.speed;
     }
 
-    if (this.stepCount > 150 || this.isMaxed) {
-      if (!this.isMaxed) {
-        this.layer3ValTarget = 0.02 + (this.stepCount - 150) * this.sizeMult;
+    if (this.stepCount > 135 || this.isMaxed || this.triggerClose) {
+      if (!this.isMaxed && !this.triggerClose) {
+        this.layer3ValTarget = 0.02 + (this.stepCount - 135) * this.sizeMult;
         if (this.layer3ValTarget > this.MAX_SIZE) {
           this.layer3ValTarget = this.MAX_SIZE;
         }
       }
-      this.layer3Val += (this.layer3ValTarget - this.layer3Val) * dt * 0.9;
+      this.layer3Val += (this.layer3ValTarget - this.layer3Val) * dt * this.speed;
     }
     // this.layer1ValTarget = this.stepCount / 500;
     // // console.log(this.layer0ValTarget);
@@ -122,7 +145,6 @@ AFRAME.registerComponent('canvas-controller', {
     this.prevTime = Date.now();
 
     addMessageListener('MAT_STATE', (matData) => {
-      console.log('mats');
       if (this.mats.length < 1) {
         this.mats = matData.map((m) => new MatCircle(m.id, m.x, m.y, m.stepCount));
       } else {
@@ -140,7 +162,7 @@ AFRAME.registerComponent('canvas-controller', {
     });
 
     addMessageListener('BEGIN', () => {
-      this.mats.forEach(m => m.begin());
+      this.mats.forEach((m) => m.begin());
     });
 
     addMessageListener('REFRESH', () => {
@@ -186,16 +208,14 @@ AFRAME.registerComponent('canvas-controller', {
     // }, 0);
     // console.log(totalSteps);
     let totalSteps = 0;
-    for (let i = 0; i < this.mats.length; i++) {
+    for (let i = 0; i < this.mats.length; i += 1) {
       totalSteps += this.mats[i].stepCount;
     }
-    console.log(totalSteps);
+
     if (!this.panel1Active && totalSteps > 100) {
       this.panel1Active = true;
-      console.log('glug');
       document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; color: white; src: #wall-vid-1;');
       document.querySelector('#wall-panel-1').setAttribute('position', '4 7 -14.31');
-      
     }
     if (!this.panel2Active && totalSteps > 20) {
       this.panel2Active = true;
