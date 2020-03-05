@@ -49,8 +49,8 @@ class MatCircle {
     this.layer3ValTarget = 0.0;
     this.speed = 1;
 
-    document.querySelector('#wall-panel-1').setAttribute('position', '0 200 0');
-    document.querySelector('#wall-panel-2').setAttribute('position', '0 200 0');
+    // document.querySelector('#wall-panel-1').setAttribute('position', '0 200 0');
+    // document.querySelector('#wall-panel-2').setAttribute('position', '0 200 0');
   }
 
   triggerMax() {
@@ -173,10 +173,10 @@ AFRAME.registerComponent('canvas-controller', {
 
       document.querySelector('#wall-vid-1').currentTime = 0;
       document.querySelector('#wall-vid-2').currentTime = 60;
-      document.querySelector('#wall-panel-1').setAttribute('position', '6 8 -14.31');
-      document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -15.11');
-      document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
-      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
+      // document.querySelector('#wall-panel-1').setAttribute('position', '6 8 -14.31');
+      // document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -15.11');
+      // document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
+      // document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: black;');
       this.panel1Active = false;
       // this.layer0.setAttribute('material', 'shader: flat; color: black;');
       // this.wallLayer0.setAttribute('material', 'shader: flat; color: black;');
@@ -212,17 +212,17 @@ AFRAME.registerComponent('canvas-controller', {
       totalSteps += this.mats[i].stepCount;
     }
 
-    if (!this.panel1Active && totalSteps > 100) {
-      this.panel1Active = true;
-      document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; color: white; src: #wall-vid-1;');
-      document.querySelector('#wall-panel-1').setAttribute('position', '4 7 -14.31');
-    }
-    if (!this.panel2Active && totalSteps > 20) {
-      this.panel2Active = true;
-      // console.log('wat');
-      document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: white;');
-      document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -14.11');
-    }
+    // if (!this.panel1Active && totalSteps > 100) {
+    //   this.panel1Active = true;
+    //   document.querySelector('#wall-panel-1').setAttribute('material', 'shader: flat; color: white; src: #wall-vid-1;');
+    //   document.querySelector('#wall-panel-1').setAttribute('position', '4 7 -14.31');
+    // }
+    // if (!this.panel2Active && totalSteps > 20) {
+    //   this.panel2Active = true;
+    //   // console.log('wat');
+    //   document.querySelector('#wall-panel-2').setAttribute('material', 'shader: flat; src: #wall-vid-1; color: white;');
+    //   document.querySelector('#wall-panel-2').setAttribute('position', '-40 2.65 -14.11');
+    // }
 
     // update and apply mat vals
     this.mats.forEach((m) => {

@@ -86,9 +86,8 @@
       <a-plane id="layer-2" height="31.83" width="31.83" position="0 -0.4 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-3-vid; transparent: true;"></a-plane>
       <a-plane id="layer-1" height="31.83" width="31.83" position="0 -0.2 0" rotation="-90 0 0" material="shader: vid-mat-holes; src: #layer-2-vid; transparent: true;"></a-plane>
       <a-plane id="layer-0" height="31.83" width="31.83" rotation="-90 0 0" material="shader: mat-holes; transparent: true;"></a-plane>
-      <!-- <a-plane id="layer-0-temp" height="31.83" width="31.83" rotation="-90 0 0" material="shader: flat; src: #grid;"></a-plane> -->
+      <a-plane id="ripple-layer" ripple-manager height="31.83" width="31.83" position="0 0.2 0" rotation="-90 0 0" material="shader: step-ripple; transparent: true;"></a-plane>
       <!-- 15.91 9.65-->
-
 
       <a-sky material="color:#000000"></a-sky>
     </a-scene>
